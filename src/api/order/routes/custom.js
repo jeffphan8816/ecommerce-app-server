@@ -4,9 +4,6 @@ module.exports = {
       method: 'POST',
       path: '/orders/success/:sessionId',
       handler: 'order.handleSuccessfulPayment',
-      config: {
-        auth: false,
-      },
     },
   ]
 }

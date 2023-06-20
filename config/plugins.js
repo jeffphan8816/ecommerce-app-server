@@ -1,3 +1,9 @@
 module.exports = () => ({
-    'duplicate-button': true,
+    // 'duplicate-button': true,
+    // 'import-export-entries': {
+    //   enabled: true,
+    //   config: {
+    //     // See `Config` section.
+    //   },
+    // },
   });

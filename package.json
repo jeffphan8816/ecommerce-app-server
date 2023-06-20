@@ -10,11 +10,10 @@
     "strapi": "strapi"
   },
   "dependencies": {
-    "@strapi/plugin-i18n": "4.8.2",
-    "@strapi/plugin-users-permissions": "4.8.2",
-    "@strapi/strapi": "4.8.2",
+    "@strapi/plugin-i18n": "4.11.1",
+    "@strapi/plugin-users-permissions": "4.11.1",
+    "@strapi/strapi": "4.11.1",
     "better-sqlite3": "8.0.1",
-    "strapi-plugin-duplicate-button": "^1.1.7",
     "stripe": "^12.1.1"
   },
   "author": {
@@ -27,5 +26,8 @@
     "node": ">=14.19.1 <=18.x.x",
     "npm": ">=6.0.0"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "env-cmd": "^10.1.0"
+  }
 }

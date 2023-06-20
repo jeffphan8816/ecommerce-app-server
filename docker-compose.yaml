@@ -1,16 +1,59 @@
-version: '3.8'
+version: "3"
 services:
-  client:
-    build: ./client
-    ports:
-      - "3000:3000"
-    stdin_open: true
-    tty: true
-    # volumes:
-    #   - ./client:/usr/src/app
-  server:
-    build: ./server
+  strapi:
+    container_name: strapi
+    build: .
+    image: strapi:latest
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      DATABASE_CLIENT: postgres
+      DATABASE_HOST: strapi.c1dbui73ptva.us-west-1.rds.amazonaws.com
+      DATABASE_PORT: 5432
+      DATABASE_NAME: strapi
+      DATABASE_USERNAME: postgres
+      DATABASE_PASSWORD: swimming123
+      JWT_SECRET: ${JWT_SECRET}
+      ADMIN_JWT_SECRET: U8WWYUZOAoJOKTp0gZTndA==
+      APP_KEYS: BXNHxvsXjCd5mp+OkSTjuQ==,4oaNpn6uYUI0XRMhG+W8KQ==,FhqbtU4/9dje5skE7y+BkA==,BldSU6X2hhedKoP5fQJiGQ==
+      NODE_ENV: ${NODE_ENV}
+    volumes:
+      - ./config:/opt/app/config
+      - ./src:/opt/app/src
+      - ./package.json:/opt/package.json
+      - ./yarn.lock:/opt/yarn.lock
+      - ./.env:/opt/app/.env
+      - ./public/uploads:/opt/app/public/uploads
     ports:
       - "1338:1338"
-    # volumes:
-    #   - ./server:/usr/src/app
+    networks:
+      - strapi
+    depends_on:
+      - strapiDB
+
+  strapiDB:
+    container_name: strapiDB
+    platform: linux/amd64 #for platform error on Apple M1 chips
+    restart: unless-stopped
+    env_file: .env
+    image: postgres:12.0-alpine
+    environment:
+      POSTGRES_USER: ${DATABASE_USERNAME}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      POSTGRES_DB: ${DATABASE_NAME}
+    volumes:
+      - strapi-data:/var/lib/postgresql/data/ #using a volume
+      #- ./data:/var/lib/postgresql/data/ # if you want to use a bind folder
+
+    ports:
+      - "5432:5432"
+    networks:
+      - strapi
+
+volumes:
+  strapi-data:
+
+networks:
+  strapi:
+    name: Strapi
+    driver: bridge

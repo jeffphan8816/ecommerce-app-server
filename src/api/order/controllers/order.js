@@ -30,12 +30,14 @@ module.exports = createCoreController("api::order.order", ({ strapi }) => ({
         })
       );
       //create stripe session
+      
+      console.log("🚀 ~ file: order.js:40 ~ create ~ BACKEND_URL:", `${process.env.BACKEND_URL}`)
       const session = await stripe.checkout.sessions.create({
         payment_method_types: ["card"],
         customer_email: email,
         mode: "payment",
-        // success_url: `${process.env.FRONTEND_URL}/checkout/success/{CHECKOUT_SESSION_ID}`,
-        success_url: `${process.env.BACKEND_URL}/api/orders/success/{CHECKOUT_SESSION_ID}`,
+        success_url: `${process.env.FRONTEND_URL}/checkout/success/{CHECKOUT_SESSION_ID}`,
+        // success_url: `${process.env.BACKEND_URL}/api/orders/success/{CHECKOUT_SESSION_ID}`,
         cancel_url: `${process.env.FRONTEND_URL}`,
         line_items: lineItems,
       });
@@ -56,6 +58,7 @@ module.exports = createCoreController("api::order.order", ({ strapi }) => ({
    * Handle successful payment
    */
   async handleSuccessfulPayment(ctx) {
+    console.log('🚀 ~ file: order.js:70 ~ handleSuccessfulPayment ~ ctx', ctx)
     try {
       const { sessionId } = ctx.params;
       // Retrieve the Stripe session by ID to confirm the payment
@@ -77,10 +80,15 @@ module.exports = createCoreController("api::order.order", ({ strapi }) => ({
           order.id,
           { data: { paid: true } }
         );
-        return updatedOrder.products;
+        return { message: "Payment successful.", order: updatedOrder };
+        // const redirectToURL = `${process.env.FRONTEND_URL}/checkout/success/${sessionId}`; 
+        // ctx.response.redirect(redirectToURL);
       } else {
-        // Handle other payment statuses, e.g. "unpaid", "canceled"
-        return { message: "Payment unsuccessful." };
+        // Return an error message to the user
+        return { message: "Payment failed." };
+        // const redirectToURL = `${process.env.FRONTEND_URL}/checkout/success/${sessionId}`; 
+        // ctx.response.redirect(redirectToURL);
+        
       }
     } catch (error) {
       // Handle errors
